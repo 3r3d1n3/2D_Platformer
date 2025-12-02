@@ -1,52 +1,65 @@
-using UnityEditor.Callbacks;
+using System;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+    public SpriteRenderer playerSR;
+    public Animator playerAnim;
     private Rigidbody2D playerRb;
-    private float h;
-    private bool isGround;
-    private Animator playerAnimator;
-    private SpriteRenderer playerRenderer;
-    [SerializeField] private float moveSpeed = 3f;
-    [SerializeField] private float jumpForce = 5f;
+    
+    private float horizontalInput;
+    private float verticalInput;
+    private bool isGrounded;
+    private int facingDirection = 1;
+
+    [SerializeField] private float moveSpeed = 7f;
+
+    [SerializeField] private float jumpPower;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    void Awake()
     {
         playerRb = GetComponent<Rigidbody2D>();
-        playerAnimator = GetComponent<Animator>();
-        playerRenderer = GetComponent<SpriteRenderer>();
+    }
+
+    void FixedUpdate()
+    {
+        Move();
     }
 
     // Update is called once per frame
     void Update()
     {
-        h = Input.GetAxisRaw("Horizontal");
-        if (h != 0)
+        horizontalInput = Input.GetAxisRaw("Horizontal");
+        verticalInput = Input.GetAxisRaw("Vertical");
+        
+        moveSpeed = verticalInput < 0 ? 3.5f : 7f;
+        
+        SetPlayerAnim();
+    }
+
+    
+
+    private void Move()
+    {
+        if (horizontalInput != 0)
         {
-            playerRenderer.flipX = h < 0;
+            playerRb.linearVelocityX = moveSpeed * horizontalInput;
         }
-        playerAnimator.SetBool("IsRunning", h != 0);
-
-
-        if (Input.GetKeyDown(KeyCode.Space) && isGround)
+        else
         {
-            playerRb.AddForceY(jumpForce, ForceMode2D.Impulse);
+            playerRb.linearVelocityX = 0;
         }
     }
 
-    void FixedUpdate()
+    private void SetPlayerAnim()
     {
-        playerRb.linearVelocityX = moveSpeed * h;
-    }
-
-    void OnCollisionEnter2D(Collision2D collision)
-    {
-        isGround = true;
-    }
-
-    void OnCollisionExit2D(Collision2D collision)
-    {
-        isGround = false;
+        if (horizontalInput != 0)
+        {
+            facingDirection = horizontalInput > 0 ? 1 : -1;
+            playerSR.flipX = facingDirection == -1;
+        }
+        
+        playerAnim.SetFloat("AxisX", horizontalInput);
+        playerAnim.SetFloat("AxisY", verticalInput);
     }
 }
