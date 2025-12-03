@@ -8,6 +8,10 @@ public class PlayerMovement : MonoBehaviour
     public InputType inputType;
     public SpriteRenderer playerSR;
     public Animator playerAnim;
+    public Transform groundCheck;
+    public float groundCheckRadius = 0.1f;
+    public LayerMask groundLayer;
+    
     private Rigidbody2D playerRb;
     private CapsuleCollider2D playerCollider;
     
@@ -34,6 +38,7 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        
         if (inputType == InputType.Keyboard)
         {
             horizontalInput = Input.GetAxisRaw("Horizontal");
@@ -49,6 +54,9 @@ public class PlayerMovement : MonoBehaviour
         }
         
         SetPlayerAnim();
+
+        isGrounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer);
+        playerAnim.SetBool("IsGrounded", isGrounded);
     }
 
     public void Jump()
@@ -92,24 +100,7 @@ public class PlayerMovement : MonoBehaviour
         playerAnim.SetFloat("AxisX", horizontalInput);
         playerAnim.SetFloat("AxisY", verticalInput);
     }
-
-    private void OnCollisionEnter2D(Collision2D other)
-    {
-        if (other.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = true;
-            playerAnim.SetBool("IsGrounded", true);
-        }
-    }
-
-    private void OnCollisionExit2D(Collision2D other)
-    {
-        if (other.gameObject.CompareTag("Ground"))
-        {
-            isGrounded = false;
-            playerAnim.SetBool("IsGrounded", false);
-        }
-    }
+    
 
     public void InputJoystick(float h, float v)
     {

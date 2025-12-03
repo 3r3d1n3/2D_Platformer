@@ -10,15 +10,19 @@ public class JoyStick : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoint
     private Vector2 startPos, currentPos;
     private float maxDistance = 75f;
     private PlayerMovement playerMovement;
+    private PlayerAttack playerAttack;
     [SerializeField] private GameObject backgroundUI;
 
     [SerializeField] private GameObject handleUI;
     [SerializeField] private Button jumpButton;
+    [SerializeField] private Button attackButton;
 
     private void Awake()
     {
         playerMovement = FindFirstObjectByType<PlayerMovement>();
+        playerAttack = FindFirstObjectByType<PlayerAttack>();
         jumpButton.onClick.AddListener(playerMovement.Jump);
+        attackButton.onClick.AddListener(playerAttack.Attack);
     }
 
     void Start()
