@@ -5,6 +5,8 @@ public class PlayerAttack : MonoBehaviour
     public enum InputType {Keyboard, Joystick}
     public InputType inputType;
 
+    private SoundManager soundManager;
+    
     [SerializeField] private bool isAttacking, isDuringCombo, isFinal;
     
     [SerializeField] private Animator playerAnim;
@@ -17,6 +19,8 @@ public class PlayerAttack : MonoBehaviour
         {
             playerAnim = GetComponentInChildren<Animator>();
         }
+
+        soundManager = FindFirstObjectByType<SoundManager>();
     }
     void Update()
     {
@@ -78,5 +82,20 @@ public class PlayerAttack : MonoBehaviour
         isAttacking = false;
         isDuringCombo = false;
         isFinal = false;
+    }
+
+    public void AttackSound1()
+    {
+        soundManager.SoundOneShot("Attack1");
+    }
+
+    public void AttackSound2()
+    {
+        soundManager.SoundOneShot("Attack2");
+    }
+
+    public void AttackSound3()
+    {
+        soundManager.SoundOneShot("Attack3");
     }
 }

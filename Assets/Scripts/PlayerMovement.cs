@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public enum InputType {Keyboard, Joystick}
     public InputType inputType;
     public SpriteRenderer playerSR;
     public Animator playerAnim;
@@ -14,6 +13,7 @@ public class PlayerMovement : MonoBehaviour
     
     private Rigidbody2D playerRb;
     private CapsuleCollider2D playerCollider;
+    private SoundManager soundManager;
     
     [SerializeField] private float horizontalInput;
     [SerializeField] private float verticalInput;
@@ -26,6 +26,7 @@ public class PlayerMovement : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Awake()
     {
+        soundManager = FindFirstObjectByType<SoundManager>();
         playerRb = GetComponent<Rigidbody2D>();
         playerCollider = GetComponent<CapsuleCollider2D>();
     }
@@ -48,7 +49,7 @@ public class PlayerMovement : MonoBehaviour
         
         moveSpeed = verticalInput < 0 ? 1.5f : 3f;
 
-        if (Input.GetButtonDown("Jump") && isGrounded)
+        if (inputType == InputType.Keyboard && Input.GetButtonDown("Jump") )
         {
             Jump();
         }
@@ -61,8 +62,11 @@ public class PlayerMovement : MonoBehaviour
 
     public void Jump()
     {
-        playerRb.AddForce(Vector3.up * jumpPower, ForceMode2D.Impulse);
-        playerAnim.SetTrigger("Jump");
+        if (isGrounded)
+        {
+            playerRb.AddForce(Vector3.up * jumpPower, ForceMode2D.Impulse);
+            playerAnim.SetTrigger("Jump");
+        }
     }
     
 
@@ -130,5 +134,10 @@ public class PlayerMovement : MonoBehaviour
             else horizontalInput = 0f;
         }
         
+    }
+
+    public void FootStepSound()
+    {
+        soundManager.SoundOneShot("Footstep Field");
     }
 }
